@@ -1,100 +1,176 @@
--- Active: 1714478827335@@127.0.0.1@5432@20241_fatec_ipi_pbdi_selecao@public
+-- Active: 1714478827335@@127.0.0.1@5432@20241_fatec_ipi_pbdi_repeticao@public
 
---IF/ELSIF/ELSE
 DO $$
-    DECLARE
-        a INT := fn_gera_valor_aleatorio_entre(0, 20);
-        b INT := fn_gera_valor_aleatorio_entre(0, 20);
-        c INT := fn_gera_valor_aleatorio_entre(0, 20);
-        delta NUMERIC (10, 2);
-        raizUm NUMERIC (10, 2);
-        raizDois NUMERIC (10, 2);
-    BEGIN
-        RAISE NOTICE '%x% + %x + % = 0', a, U&'\00B2', b, c;
-        IF a = 0 THEN
-            RAISE NOTICE 'Não vai rolar, não é de segundo grau';
-        ELSE
-            delta := (b ^ 2) - (4 * a * c);
-            RAISE NOTICE 'Valor de delta = %', delta;
-            IF delta > 0 THEN
-                raizUm := (b * -1 + |/delta) / (2 * a);
-                raizDois := (b * -1 - |/delta) / (2 * a);
-                RAISE NOTICE 'Duas raizes: % e %', raizUm, raizDois;
-            ELSIF delta = 0 THEN
-                raizUm := (b * -1 + |/delta) / (2 * a);
-                RAISE NOTICE 'Uma raiz: %', raizUm;
-            ELSE
-                RAISE NOTICE 'Sem raiz';
-            END IF;
-        END IF;
-
-    END;
+DECLARE
+    aluno RECORD;
+    media NUMERIC(10, 2) := 0;
+    total INT;
+BEGIN
+    FOR aluno IN 
+        SELECT * FROM tb_aluno
+    LOOP
+        -- mostrar a nota do aluno atual
+        RAISE NOTICE 'Nota do aluno é %', aluno.nota;
+        -- acumular a media
+        media := media +aluno.nota;
+    END LOOP;
+    -- guardar a quantidade de linhas na variável total
+    SELECT COUNT(*) FROM tb_aluno INTO total;
+    RAISE NOTICE 'Media: %', media / total;
+END;
 $$
 
-
--- -- IF/ELSE: Verificar a paridade de um número
 -- DO $$
---     DECLARE
---         valor INT := fn_gera_valor_aleatorio_entre(1, 100);
+--     -- use um for para inserir 10 notas (0 a 10)
 --     BEGIN
---         RAISE NOTICE 'O valor gerado foi %', valor;
---     IF valor % 2 = 0 THEN
---         RAISE NOTICE 'O valor % é par', valor;
---     ELSE
---         RAISE NOTICE 'O valor % é impar', valor;
---     END IF;
-
+--         FOR i IN 1..10 LOOP
+--             INSERT INTO tb_aluno(nota) VALUES (fn_gera_valor_aleatorio_entre(0, 10));
+--         END LOOP;
 -- END;
+-- $$
 
+-- SELECT * FROM tb_aluno;
 
+-- CREATE TABLE tb_aluno(
+--     cod_aluno SERIAL PRIMARY KEY,
+--     nota INT
+-- );
+
+-- --for: iterando sobre intervalos
 -- DO $$
--- DECLARE
---     valor INT;
--- BEGIN 
---     valor := fn_gera_valor_aleatorio_entre(1, 100);
---     RAISE NOTICE 'O valor gerado é %', valor;
---     -- reescrever usando o predicado not between
---     IF valor not between 21 AND 100 THEN
---         RAISE NOTICE 'A metade do valor % é %', valor, valor / 2::FLOAT;
---     END IF;
---     END;
+-- BEGIN
+--     RAISE NOTICE 'pulando de um em um...';
+--     FOR i IN 1..10 LOOP
+--         RAISE NOTICE '%', i;
+--     END LOOP;
+--     RAISE NOTICE 'E Agora? Não mostra nada...';
+--     FOR i IN 10..1 LOOP
+--         RAISE NOTICE '%', i;
+--     END LOOP;
+--     RAISE NOTICE 'Agora pulando de um em um ao contrário...';
+--     FOR i IN REVERSE 10..1 LOOP
+--         RAISE NOTICE '%', i;
+--     END LOOP;
+--     RAISE NOTICE 'Pular de 1 a 50 de 2 em 2';
+--     FOR i IN 1..50 BY 2 LOOP
+--         RAISE NOTICE '%', i;
+--     END LOOP;
+--     RAISE NOTICE 'Pular de 50 a 1 de 2 em 2';
+--     FOR i IN REVERSE 50..1 BY 2 LOOP
+--         RAISE NOTICE '%', i;
+--     END LOOP;
+-- END;
 -- $$
 
 -- DO $$
 -- DECLARE
---     valor INT;
--- BEGIN 
---     valor := fn_gera_valor_aleatorio_entre(1, 100);
---     RAISE NOTICE 'O valor gerado é %', valor;
---     -- reescrever usando o predicado between
---     IF valor between 1 AND 20 THEN
---         RAISE NOTICE 'A metade do valor % é %', valor, valor / 2::FLOAT;
+--     nota INT;
+--     media NUMERIC(10,2) := 0;
+--     contador INT := 0;
+-- BEGIN
+--     -- [-1 a 10]
+--     SELECT fn_gera_valor_aleatorio_entre(0, 11) - 1 INTO nota;
+--     --RAISE NOTICE 'Nota %', nota;
+--     WHILE nota >= 0 LOOP
+--         --exibir a nota
+--         RAISE NOTICE 'Nota %', nota;
+--         --acumular o valor gerado na variável média
+--         media := media + nota;
+--         contador := contador +1;
+--         -- gerar outro valor, atualizando a variável nota, garantindo a eventual saida
+--         SELECT fn_gera_valor_aleatorio_entre(0, 11) - 1 INTO nota;
+        
+--     END LOOP;
+--     -- se pelo menos uma nota tiver sido gerado, calcular a media
+--     IF contador > 0 THEN
+--         media := media / contador;
+--         RAISE NOTICE 'Média: %', media;
+--     -- senão, informar que nenhuma nota foi gerada
+--     ELSE
+--         RAISE NOTICE 'Não temos media, nenhuma nota gerada';
 --     END IF;
---     END;
+-- END;
 -- $$
 
-
--- --IF: gerar um valor aleatório entre 1 e 100 e exibir a metade dele se ele for menor do que 20
 -- DO $$
 -- DECLARE
---     valor INT;
--- BEGIN 
---     valor := fn_gera_valor_aleatorio_entre(1, 100);
---     RAISE NOTICE 'O valor gerado é %', valor;
---     IF valor <= 20 THEN
---         RAISE NOTICE 'A metade do valor % é %', valor, valor / 2::FLOAT;
---     END IF;
---     END;
+--     i INT;
+--     j INT;
+-- BEGIN
+--     i := 0;
+--     <<externo>>
+--     LOOP
+--         i := i + 1;
+--         EXIT WHEN i > 10;
+--         j := 1;
+--         <<interno>>
+--         LOOP
+--             RAISE NOTICE '% %', i, j;
+--             j := j + 1;
+--             EXIT WHEN j > 10;
+--             EXIT externo WHEN j > 5;
+--         END LOOP;
+--     END LOOP;
+-- END;
 -- $$
--- CREATE OR REPLACE FUNCTION 
---     fn_gera_valor_aleatorio_entre(
---         lim_inferior INT, 
---         lim_superior INT
---     ) RETURNS INT AS $$
---     BEGIN
---     -- 13 e 17
---     -- RANDOM () --0 <= RANDOM() < 1
---     -- 13 + RANDOM() * 4
---     RETURN lim_inferior + FLOOR(RANDOM() * (lim_superior - lim_inferior + 1))::INT;
---     END;
---     $$ LANGUAGE plpgsql;
+
+-- -- ignore os valores 11, 22, 33 usando case/when
+-- DO $$
+-- DECLARE
+--     contador INT := 1;
+-- BEGIN
+--     LOOP
+--         contador := contador + 1;
+--         EXIT WHEN contador > 100;
+--         IF contador % 7 = 0 THEN
+--             CONTINUE;
+--         END IF;
+--         CASE
+--             WHEN contador % 11 = 0 THEN
+--                 CONTINUE;
+--         ELSE
+--             RAISE NOTICE 'Contador: %', contador;
+--         END CASE;
+--     END LOOP;
+-- END;
+-- $$
+
+-- -- vejamos como funciona a instrução continue
+-- DO $$
+-- DECLARE
+--     contador INT := 1;
+-- BEGIN
+--     LOOP
+--         contador := contador + 1;
+--         EXIT WHEN contador > 100;
+--         IF contador % 7 = 0 THEN
+--             CONTINUE;
+--         END IF;
+--         RAISE NOTICE 'Contador: %', contador;
+--     END LOOP;
+-- END;
+-- $$
+-- --contando de 1 a 10
+-- --saida com if/exit
+-- DO $$
+-- DECLARE
+--     contador INT := 1;
+-- BEGIN
+--     LOOP
+--         RAISE NOTICE '%', contador;
+--         contador := contador + 1;
+--         EXIT WHEN contador > 10;
+--         -- IF contador > 10 THEN
+--         --     EXIT;
+--         -- END IF;
+--     END LOOP;
+-- END;
+-- $$
+
+-- CREATE OR REPLACE FUNCTION fn_gera_valor_aleatorio_entre (lim_inferior INT, lim_superior
+-- INT) RETURNS INT AS
+-- $$
+-- BEGIN
+-- RETURN FLOOR(RANDOM() * (lim_superior - lim_inferior + 1) + lim_inferior)::INT;
+-- END;
+-- $$ LANGUAGE plpgsql;
